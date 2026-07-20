@@ -1,0 +1,59 @@
+import { Suspense } from "react";
+import { NavLink, Outlet } from "react-router";
+import { LoadingPlaceholder } from "@/components/loading-placeholder";
+import { cn } from "@/lib/utils";
+
+/** 玩具菜单项 */
+interface ToyItem {
+  /** 玩具名称 */
+  name: string;
+  /** 相对于 /toys 的路径 */
+  path: string;
+}
+
+/** 玩具菜单列表 */
+const toys: ToyItem[] = [
+  { name: "Oritech 效率计算", path: "oritech" },
+];
+
+/** 根据 NavLink 是否激活返回对应的 className */
+const getToyLinkClassNames = ({ isActive }: { isActive: boolean }) =>
+  cn(
+    "rounded-md px-3 py-2 text-sm whitespace-nowrap transition-colors",
+    isActive
+      ? "bg-primary/15 font-medium text-foreground"
+      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
+  );
+
+function Toys() {
+  return (
+    <div className="flex flex-col md:flex-row">
+      {/* 左侧菜单：aside 拉伸填满 main 高度保证右边框完整，nav sticky 在顶栏下方 */}
+      <aside className="md:w-60 md:self-stretch md:shrink-0 md:border-r">
+        <nav
+          className={cn(
+            "flex gap-2 overflow-x-auto p-4",
+            "md:sticky md:top-(--header-offset) md:flex-col md:gap-1",
+            "md:max-h-[calc(100vh-var(--header-offset))] md:overflow-y-auto md:overflow-x-visible",
+            "md:pb-(--header-offset)",
+          )}
+        >
+          {toys.map((toy) => (
+            <NavLink key={toy.path} to={toy.path} className={getToyLinkClassNames}>
+              {toy.name}
+            </NavLink>
+          ))}
+        </nav>
+      </aside>
+
+      {/* 右侧内容 */}
+      <main className="min-w-0 flex-1 p-6">
+        <Suspense fallback={<LoadingPlaceholder spinnerSize="size-8" />}>
+          <Outlet />
+        </Suspense>
+      </main>
+    </div>
+  );
+}
+
+export default Toys;

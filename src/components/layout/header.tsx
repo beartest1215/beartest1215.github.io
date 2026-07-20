@@ -1,94 +1,133 @@
-import { useSyncExternalStore } from "react";
-import { Moon, Sun } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router";
-import { useTheme } from "@/components/theme-provider";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { SocialLinks } from "./social-links";
+import ThemeToggle from "./theme-toggle";
 
-/** GitHub 图标 */
-function GithubIcon() {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      className="size-3.5"
-    >
-      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
-    </svg>
-  );
-}
-
-const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-/** 订阅系统深色模式偏好 */
-function usePrefersDark() {
-  return useSyncExternalStore(
-    (onChange) => {
-      darkMediaQuery.addEventListener("change", onChange);
-      return () => darkMediaQuery.removeEventListener("change", onChange);
-    },
-    () => darkMediaQuery.matches,
-  );
-}
-
-/** 深色/浅色主题切换按钮 */
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const systemDark = usePrefersDark();
-  const isDark = theme === "system" ? systemDark : theme === "dark";
-
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label="切换主题"
-    >
-      {isDark ? <Sun /> : <Moon />}
-    </Button>
-  );
-}
-
-/** 顶部固定横条 */
+/** 顶部横条 */
 function Header() {
-  const getNavLinkClassNames = ({ isActive }: { isActive: boolean }) => `text-lg transition-colors ${isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`;
+  /** 移动端菜单展开状态 */
+  const [mobileOpen, setMobileOpen] = useState(false);
+  /** 汉堡按钮 ref：用于点击外部时排除自身 */
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  /** 移动端下拉菜单 ref：用于点击外部判断 */
+  const menuRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      return;
+    }
+    /** 移动端菜单打开时监听点击菜单与按钮以外区域关闭菜单 */
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        menuRef.current?.contains(target) ||
+        triggerRef.current?.contains(target)
+      ) {
+        return;
+      }
+      setMobileOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mobileOpen]);
+
+  /** 根据 NavLink 是否激活返回对应的 className，悬浮或激活时下划线从中心展开 */
+  const getNavLinkClassNames = ({ isActive }: { isActive: boolean }) =>
+    cn(
+      "relative text-lg transition-colors",
+      "after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-full after:origin-center after:-translate-x-1/2 after:scale-x-0 after:bg-foreground after:transition-transform after:duration-200",
+      isActive
+        ? "text-foreground after:scale-x-100"
+        : "text-muted-foreground hover:text-foreground hover:after:scale-x-100",
+    );
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-      <div className="mx-auto flex h-14 items-center justify-between px-6">
-        <span className="font-semibold">BearBin</span>
-        <nav className="flex gap-6">
+    <header className="sticky top-0 z-50 w-full border-b">
+      <div
+        className={cn(
+          "mx-auto flex h-(--header-height) items-center justify-between px-5",
+          // 渐进增强：支持 backdrop-filter 时叠加半透明背景 + 模糊，否则降级为更不透明的纯色
+          "bg-background/50 backdrop-blur supports-backdrop-filter:bg-background/23",
+        )}
+      >
+        <span className="flex-1 justify-start font-semibold">
+          <NavLink to="/">BearBin</NavLink>
+        </span>
+        {/* 桌面端导航 */}
+        <nav className="hidden flex-none gap-6 md:flex">
+          <NavLink to="/about" className={getNavLinkClassNames}>
+            关于
+          </NavLink>
+          <NavLink to="/toys" className={getNavLinkClassNames}>
+            玩具
+          </NavLink>
+          <NavLink to="/blog" className={getNavLinkClassNames}>
+            杂记
+          </NavLink>
+        </nav>
+        {/* 桌面端社交链接 + 主题切换 */}
+        <div className="hidden flex-1 items-center justify-end gap-1 md:flex">
+          <SocialLinks />
+          <ThemeToggle />
+        </div>
+        {/* 移动端主题切换 + 汉堡按钮 */}
+        <div className="flex items-center gap-1 md:hidden">
+          <ThemeToggle />
+          <button
+            ref={triggerRef}
+            type="button"
+            aria-label={mobileOpen ? "关闭菜单" : "打开菜单"}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((v) => !v)}
+            className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }))}
+          >
+            {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* 移动端下拉菜单 */}
+      {mobileOpen && (
+        <nav
+          ref={menuRef}
+          className={cn(
+            // 紧贴 header 下方，铺满宽度
+            "absolute left-0 right-0 top-full z-50 flex flex-col gap-2 border-b px-5 py-3 md:hidden",
+            // 渐进增强：与顶部条相同的半透明 + 模糊降级策略
+            "bg-background/70 backdrop-blur supports-backdrop-filter:bg-background/37",
+          )}
+        >
           <NavLink
             to="/about"
+            onClick={() => setMobileOpen(false)}
             className={getNavLinkClassNames}
           >
             关于
           </NavLink>
           <NavLink
             to="/toys"
+            onClick={() => setMobileOpen(false)}
             className={getNavLinkClassNames}
           >
             玩具
           </NavLink>
           <NavLink
-            to="/notes"
+            to="/blog"
+            onClick={() => setMobileOpen(false)}
             className={getNavLinkClassNames}
           >
             杂记
           </NavLink>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t pt-3">
+            <SocialLinks showLabel />
+          </div>
         </nav>
-        <div className="flex items-center gap-2">
-          <a
-            href="https://github.com/BearBin1215/BearBin1215.github.io"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-            className={buttonVariants({ variant: "ghost", size: "icon" })}
-          >
-            <GithubIcon />
-          </a>
-          <ThemeToggle />
-        </div>
-      </div>
+      )}
     </header>
   );
 }

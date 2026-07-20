@@ -1,10 +1,14 @@
-import { defineConfig } from 'vitest/config';
+import path from "path";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   test: {
-    root: __dirname,
-    include: ['test/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    include: ["test/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
     passWithNoTests: true,
-    testTimeout: 1000 * 30,
   },
 });

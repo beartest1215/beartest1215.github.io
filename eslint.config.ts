@@ -3,13 +3,10 @@ import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import stylistic from "@stylistic/eslint-plugin";
 import eslintReact from "@eslint-react/eslint-plugin";
-import { importX } from 'eslint-plugin-import-x';
+import { importX } from "eslint-plugin-import-x";
 
 export default defineConfig(
-  globalIgnores([
-    "**/node_modules/",
-    "dist",
-  ]),
+  globalIgnores(["**/node_modules/", "dist"]),
 
   eslint.configs.recommended,
   tseslint.configs.recommended,
@@ -30,12 +27,12 @@ export default defineConfig(
     plugins: {
       "@stylistic": stylistic,
       "@react": eslintReact,
-      'import-x': importX,
+      "import-x": importX,
     },
     rules: {
-      "curly": 2,
+      curly: 2,
       "dot-notation": 2,
-      "eqeqeq": 2,
+      eqeqeq: 2,
       "logical-assignment-operators": 2,
       "no-new-func": 2,
       "no-new-wrappers": 2,
@@ -72,15 +69,18 @@ export default defineConfig(
       "prefer-exponentiation-operator": 2,
       "prefer-destructuring": 0,
       "require-await": 2,
-      "yoda": 2,
+      yoda: 2,
 
       "@typescript-eslint/ban-ts-comment": 0,
       "@typescript-eslint/no-explicit-any": 0,
-      "@typescript-eslint/no-unused-vars": [2, {
-        argsIgnorePattern: "^_",
-        varsIgnorePattern: "^_",
-        ignoreRestSiblings: true,
-      }],
+      "@typescript-eslint/no-unused-vars": [
+        2,
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          ignoreRestSiblings: true,
+        },
+      ],
 
       "@eslint-react/dom-no-dangerously-set-innerhtml": 0,
       "@eslint-react/exhaustive-deps": 0,
@@ -93,18 +93,21 @@ export default defineConfig(
       "@stylistic/jsx-equals-spacing": 2,
       "@stylistic/jsx-first-prop-new-line": [2, "multiline"],
       "@stylistic/jsx-indent-props": [2, 2],
-      "@stylistic/jsx-max-props-per-line": [2, { maximum: { single: 2, multi: 1 } }],
+      "@stylistic/jsx-max-props-per-line": [2, { maximum: { single: 3, multi: 1 } }],
       "@stylistic/jsx-quotes": [1, "prefer-double"],
       "@stylistic/jsx-self-closing-comp": 2,
       "@stylistic/jsx-tag-spacing": 2,
-      "@stylistic/jsx-wrap-multilines": [2, {
-        declaration: "parens-new-line",
-        assignment: "parens-new-line",
-        return: "parens-new-line",
-        condition: "parens-new-line",
-        arrow: "parens-new-line",
-        logical: "parens-new-line",
-      }],
+      "@stylistic/jsx-wrap-multilines": [
+        2,
+        {
+          declaration: "parens-new-line",
+          assignment: "parens-new-line",
+          return: "parens-new-line",
+          condition: "parens-new-line",
+          arrow: "parens-new-line",
+          logical: "parens-new-line",
+        },
+      ],
       // "@stylistic/jsx-shorthand-boolean": 2,
 
       "@stylistic/arrow-parens": 2,
@@ -120,14 +123,17 @@ export default defineConfig(
       "@stylistic/semi": [2, "always"],
       "@stylistic/spaced-comment": 2,
 
-      'import-x/order': [2, {
-        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-        pathGroups: [{ pattern: '@/**', group: 'internal' }],
-        pathGroupsExcludedImportTypes: ['builtin'],
-      }],
-      'import-x/no-deprecated': 2,
-      'import-x/no-duplicates': [2, { 'prefer-inline': true }],
-      'import-x/newline-after-import': [2, { considerComments: true }],
+      "import-x/order": [
+        2,
+        {
+          groups: ["builtin", "external", "internal", "parent", "sibling", "index"],
+          pathGroups: [{ pattern: "@/**", group: "internal" }],
+          pathGroupsExcludedImportTypes: ["builtin"],
+        },
+      ],
+      "import-x/no-deprecated": 2,
+      "import-x/no-duplicates": [2, { "prefer-inline": true }],
+      "import-x/newline-after-import": [2, { considerComments: true }],
     },
   },
 );

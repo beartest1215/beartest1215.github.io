@@ -4,23 +4,21 @@ type Theme = "dark" | "light" | "system";
 type ResolvedTheme = "dark" | "light";
 
 type ThemeProviderProps = {
-  children: React.ReactNode
-  defaultTheme?: Theme
-  storageKey?: string
-  disableTransitionOnChange?: boolean
+  children: React.ReactNode;
+  defaultTheme?: Theme;
+  storageKey?: string;
+  disableTransitionOnChange?: boolean;
 };
 
 type ThemeProviderState = {
-  theme: Theme
-  setTheme: (theme: Theme) => void
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
 };
 
 const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)";
 const THEME_VALUES: Theme[] = ["dark", "light", "system"];
 
-const ThemeProviderContext = createContext<
-  ThemeProviderState | undefined
->(undefined);
+const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined);
 
 function isTheme(value: string | null): value is Theme {
   if (value === null) {
@@ -48,7 +46,9 @@ function disableTransitionsTemporarily() {
   document.head.appendChild(style);
 
   return () => {
+    // 强制浏览器执行一次样式重排，确保 transition:none 规则已生效
     window.getComputedStyle(document.body);
+    // 双重 rAF 等待两帧，保证下一帧恢复时不会带上被禁用的过渡
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         style.remove();
@@ -75,7 +75,11 @@ export function ThemeProvider({
 
   const setTheme = useCallback(
     (nextTheme: Theme) => {
-      localStorage.setItem(storageKey, nextTheme);
+      try {
+        localStorage.setItem(storageKey, nextTheme);
+      } catch {
+        // 隐私模式或磁盘满时静默降级，仍更新内存状态
+      }
       setThemeState(nextTheme);
     },
     [storageKey],
