@@ -21,6 +21,18 @@ function AudioController() {
   const track = tracks[currentIndex];
   const effectiveVolume = muted ? 0 : volume;
 
+  // 挂载时若 duration 已就绪（缓存命中/StrictMode 重挂载），主动上报
+  // 避免 loadedmetadata 一次性事件在事件绑定前触发而丢失，导致 duration 显示 0
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
+    }
+    if (Number.isFinite(audio.duration) && audio.duration > 0) {
+      reportDuration(audio.duration);
+    }
+  }, [reportDuration]);
+
   // 播放/暂停控制
   useEffect(() => {
     const audio = audioRef.current;
@@ -77,6 +89,7 @@ function AudioController() {
     <audio
       ref={audioRef}
       src={track.src}
+      preload="metadata"
       onTimeUpdate={(e) => reportTimeUpdate(e.currentTarget.currentTime)}
       onLoadedMetadata={(e) => reportDuration(e.currentTarget.duration)}
       onEnded={reportEnded}

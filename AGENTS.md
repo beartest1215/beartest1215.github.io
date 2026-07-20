@@ -5,6 +5,7 @@ GitHub Pages 个人博客项目，处于早期开发阶段。
 ## 技术栈
 
 - **框架**: React 19
+- **路由**：React Router v8（无需额外引入react-router-dom）
 - **UI组件库**: shadcn/ui
 - **图标库**：lucide-react, @icons-pack/react-simple-icons, @ant-design/icons
 - **样式**: Tailwind CSS v4
