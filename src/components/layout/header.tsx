@@ -40,7 +40,8 @@ function Header() {
   const getNavLinkClassNames = ({ isActive }: { isActive: boolean }) =>
     cn(
       "relative text-lg transition-colors",
-      "after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-full after:origin-center after:-translate-x-1/2 after:scale-x-0 after:bg-foreground after:transition-transform after:duration-200",
+      "px-3 md:px-0", // 移动端加上左右边距
+      "after:absolute after:-bottom-1 after:left-1/2 after:h-0.5 after:w-full after:origin-center after:-translate-x-1/2 after:scale-x-0 after:bg-primary after:transition-transform after:duration-200",
       isActive
         ? "text-foreground after:scale-x-100"
         : "text-muted-foreground hover:text-foreground hover:after:scale-x-100",
@@ -96,7 +97,6 @@ function Header() {
         <nav
           ref={menuRef}
           className={cn(
-            // 紧贴 header 下方，铺满宽度
             "absolute left-0 right-0 top-full z-50 flex flex-col gap-2 border-b px-5 py-3 md:hidden",
             // 渐进增强：与顶部条相同的半透明 + 模糊降级策略
             "bg-background/70 backdrop-blur supports-backdrop-filter:bg-background/37",

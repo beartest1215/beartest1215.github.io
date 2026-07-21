@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { default as Icon, GithubOutlined, BilibiliOutlined } from "@ant-design/icons";
+import { ExternalLink } from "@/components/external-link";
 import { buttonVariants } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -47,10 +48,8 @@ function SocialLinks({ showLabel = false }: SocialLinksProps) {
         <Tooltip key={link.label}>
           <TooltipTrigger
             render={
-              <a
+              <ExternalLink
                 href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
                 aria-label={link.label}
                 className={cn(
                   buttonVariants({
@@ -62,7 +61,7 @@ function SocialLinks({ showLabel = false }: SocialLinksProps) {
               >
                 {link.icon}
                 {showLabel && <span className="text-sm">{link.label}</span>}
-              </a>
+              </ExternalLink>
             }
           />
           <TooltipContent>{link.label}</TooltipContent>

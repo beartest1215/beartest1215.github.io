@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import { ExternalLink } from "@/components/external-link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 
@@ -25,14 +26,8 @@ interface TechCardProps {
 function TechCard({ tech }: TechCardProps) {
   const Icon = tech.icon;
   return (
-    <Card className="transition-all duration-400 hover:bg-card/60 hover:shadow-md hover:ring-foreground/10">
-      {/* prettier-ignore */}
-      <a
-        href={tech.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block"
-      >
+    <Card className="group/card transition-all duration-400 hover:bg-card/60 hover:shadow-md hover:ring-foreground/10">
+      <ExternalLink href={tech.url} className="block">
         <CardHeader>
           <div className="flex items-center gap-2">
             {/* 响应 Card hover，图标在卡片悬浮时放大 1.15 倍 */}
@@ -46,7 +41,7 @@ function TechCard({ tech }: TechCardProps) {
           </div>
           <CardDescription>{tech.description}</CardDescription>
         </CardHeader>
-      </a>
+      </ExternalLink>
     </Card>
   );
 }

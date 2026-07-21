@@ -4,7 +4,7 @@ import bg2 from "@/assets/background_2.jpg";
 import bg3 from "@/assets/background_3.jpg";
 
 /** 单张背景图片配置 */
-export type BackgroundItem = {
+type BackgroundItem = {
   /** 图片资源地址 */
   src: string;
   /** object-position 值，控制图片在容器中的对齐位置，默认 "center" */
@@ -123,7 +123,7 @@ function Background() {
         ))}
       </div>
       {/* 全局覆层：位于背景图层之上，为所有内容提供半透明背景色 */}
-      <div className="fixed inset-0 -z-10 bg-background/96" aria-hidden="true" />
+      <div className="fixed inset-0 -z-10 bg-background/82" aria-hidden="true" />
     </>
   );
 }

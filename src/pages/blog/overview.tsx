@@ -24,7 +24,7 @@ function StatCard({
   label: string;
 }) {
   return (
-    <Card size="sm" className="flex-1 gap-0">
+    <Card size="sm" className="group/card flex-1 gap-0">
       <CardContent className="flex items-center gap-3 py-1">
         {/* 图标容器：hover 时由 transition 平滑放大；内层图标触发 index.css 中的 animate-icon-wobble 晃动动画 */}
         <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary transition-transform duration-200 group-hover/card:scale-115">
@@ -50,7 +50,7 @@ function RecentPostCard({ post }: { post: BlogPostMeta }) {
         <time dateTime={post.date} className="tabular-nums">
           {post.date}
         </time>
-        {post.tags.length > 0 && (
+        {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {post.tags.map((tag) => (
               <span
@@ -107,9 +107,6 @@ function BlogOverview() {
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-8">
       <header className="space-y-2">
         <h1 className="text-3xl font-semibold">杂记</h1>
-        <p className="text-muted-foreground">
-          个人博客文章、技术分享与随笔。左侧可按年份、标签筛选，右侧目录会随阅读章节高亮。
-        </p>
       </header>
 
       <section className="flex flex-col gap-3 sm:flex-row sm:gap-4">
@@ -118,7 +115,7 @@ function BlogOverview() {
       </section>
 
       <section className="space-y-3">
-        <SectionTitle variant="accent">最近文章</SectionTitle>
+        <SectionTitle variant="accent">最近</SectionTitle>
         <div className="space-y-2">
           {recentPosts.map((post) => (
             <RecentPostCard key={post.slug} post={post} />

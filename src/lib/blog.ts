@@ -11,7 +11,7 @@ export interface BlogPostMeta {
   /** 摘要，可选 */
   excerpt?: string;
   /** 标签列表 */
-  tags: string[];
+  tags?: string[];
 }
 
 /** 完整博客文章（包含正文） */
@@ -112,9 +112,9 @@ export function extractToc(markdown: string): TocItem[] {
       inCodeBlock = !inCodeBlock;
       continue;
     }
-    if (inCodeBlock) {continue;}
+    if (inCodeBlock) { continue; }
     const m = /^(#{2,4})\s+(.+?)\s*#*$/.exec(line);
-    if (!m || m[1] === undefined || m[2] === undefined) {continue;}
+    if (!m || m[1] === undefined || m[2] === undefined) { continue; }
     const level = m[1].length as 2 | 3 | 4;
     const text = m[2].trim();
     items.push({ level, text, id: slugify(text) });
@@ -130,7 +130,7 @@ export function groupByYear(posts: BlogPostMeta[]): Array<{ year: string; posts:
   const groups = new Map<string, BlogPostMeta[]>();
   for (const post of posts) {
     const year = post.date.slice(0, 4) || "未知";
-    if (!groups.has(year)) {groups.set(year, []);}
+    if (!groups.has(year)) { groups.set(year, []); }
     groups.get(year)!.push(post);
   }
   return [...groups.entries()]
@@ -145,7 +145,7 @@ export function groupByYear(posts: BlogPostMeta[]): Array<{ year: string; posts:
 export function collectTags(posts: BlogPostMeta[]): Array<{ tag: string; count: number }> {
   const counts = new Map<string, number>();
   for (const post of posts) {
-    for (const tag of post.tags) {
+    for (const tag of post.tags || []) {
       counts.set(tag, (counts.get(tag) ?? 0) + 1);
     }
   }
@@ -168,4 +168,25 @@ export function filterPosts(posts: BlogPostMeta[], query: string): BlogPostMeta[
       p.title.toLowerCase().includes(q) ||
       p.excerpt?.toLowerCase().includes(q),
   );
+}
+
+/** 文章配图 URL 映射：源码路径 -> Vite 处理后的 URL，构建时由 ?url glob 生成 */
+const imageUrls = import.meta.glob("/src/content/blog/**/*.{png,jpg,jpeg,gif,webp,svg}", {
+  query: "?url",
+  import: "default",
+  eager: true,
+}) as Record<string, string>;
+
+/**
+ * 将 markdown 中的图片 src 解析为 Vite URL
+ * 绝对路径与 http(s) URL 原样返回；相对路径按文章所在年份目录 + 文件名查找映射。
+ * 使 markdown 可用 ./xxx.png 相对路径（IDE 预览友好），运行时映射为构建时 URL
+ */
+export function resolveImage(src: string, year: string): string {
+  if (src.startsWith("/") || /^https?:/.test(src)) {
+    return src;
+  }
+  const filename = src.replace(/^\.\/+/, "");
+  const key = `/src/content/blog/${year}/${filename}`;
+  return imageUrls[key] ?? src;
 }

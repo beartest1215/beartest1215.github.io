@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ExternalLink } from "@/components/external-link";
 import { cn } from "@/lib/utils";
 
 /** 基础处理用时（tick），20tick = 1s */
@@ -70,7 +71,7 @@ const clampLevel = (value: string): number => {
 function OritechCalculator() {
   const [speedLevel, setSpeedLevel] = useState(7);
   const [processLevel, setProcessLevel] = useState(7);
-  const [selectedCount, setSelectedCount] = useState(0);
+  const [selectedCount, setSelectedCount] = useState(2);
 
   /** 当前选中总数对应斜线上的最小时间及其位置 */
   const minTimeInfo = useMemo<MinTimeInfo>(() => {
@@ -97,16 +98,14 @@ function OritechCalculator() {
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Oritech 效率计算</h1>
       <p className="text-sm">
-        用于计算 Minecraft Mod{" "}
-        <a
+        自用：计算 Minecraft Mod{" "}
+        <ExternalLink
           href="https://www.curseforge.com/minecraft/mc-mods/oritech"
-          target="_blank"
-          rel="noopener noreferrer"
           className="text-primary hover:underline"
         >
           Oritech
-        </a>
-        在固定速度插件、加工室插件总数下的最优配置。
+        </ExternalLink>
+        {" "}在固定速度插件、加工室插件总数下的最优配置。
       </p>
       <p className="text-sm">
         假定处理一个物品初始用时 {BASE_TIME} tick（{BASE_TIME / 20}s），本表计算处理{" "}
@@ -143,8 +142,9 @@ function OritechCalculator() {
 
       {minTimeInfo.time !== Infinity && (
         <p className="text-sm">
-          当前选中 <span className="font-medium">{selectedCount}</span>{" "}
-          个插件时，最优配置： 速度{" "}
+          共计使用{" "}
+          <span className="font-medium">{selectedCount}</span>
+          {" "}个插件时，最优配置： 速度{" "}
           <span className="font-medium">{minTimeInfo.speed}</span> + 加工室{" "}
           <span className="font-medium">{minTimeInfo.process}</span>，耗时{" "}
           <span className="font-bold text-foreground">{minTimeInfo.time.toFixed(2)}s</span>

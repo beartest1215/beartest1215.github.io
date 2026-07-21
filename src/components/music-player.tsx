@@ -14,6 +14,7 @@ import {
   VolumeX,
 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
+import { ExternalLink } from "@/components/external-link";
 import { SectionTitle } from "@/components/section-title";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -219,7 +220,11 @@ function MusicPlayer() {
               type="button"
               onClick={toggle}
               aria-label={isPlaying ? "暂停" : "播放"}
-              className="absolute inset-0 flex items-center justify-center rounded-md bg-black/50 text-white transition-colors hover:bg-black/60 md:opacity-0 md:group-hover:opacity-100"
+              className={cn(
+                "absolute inset-0 flex items-center justify-center",
+                "rounded-md bg-black/50 text-white transition-colors hover:bg-black/60",
+                "md:opacity-0 md:group-hover:opacity-100",
+              )}
             >
               {isPlaying ? (
                 <Pause className="size-5" />
@@ -234,14 +239,12 @@ function MusicPlayer() {
             <div className="flex items-center justify-between gap-2">
               {track.songUrl ? (
                 <MarqueeText className="min-w-0 text-sm font-medium">
-                  <a
+                  <ExternalLink
                     href={track.songUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="text-inherit hover:underline"
                   >
                     {track.name}
-                  </a>
+                  </ExternalLink>
                 </MarqueeText>
               ) : (
                 <MarqueeText className="min-w-0 text-sm font-medium">
@@ -255,14 +258,12 @@ function MusicPlayer() {
             {/* 专辑名（下） */}
             {track.albumUrl ? (
               <MarqueeText className="text-xs text-muted-foreground">
-                <a
+                <ExternalLink
                   href={track.albumUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="text-inherit hover:underline"
                 >
                   {track.album}
-                </a>
+                </ExternalLink>
               </MarqueeText>
             ) : (
               <MarqueeText className="text-xs text-muted-foreground">

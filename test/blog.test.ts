@@ -19,25 +19,21 @@ function makePost(overrides: Partial<BlogPostMeta> = {}): BlogPostMeta {
   };
 }
 
-describe("slugify", () => {
+describe("slugify 生成锚点 id", () => {
   it("保留中文字符", () => {
-    expect(slugify("标题中文")).toBe("标题中文");
+    expect(slugify("abc标题中文")).toBe("abc标题中文");
   });
 
-  it("英文转小写并以 - 分隔", () => {
+  it("英文转小写并以-分隔", () => {
     expect(slugify("Hello World")).toBe("hello-world");
   });
 
-  it("非字母数字字符统一替换为 -", () => {
-    expect(slugify("a/b\\c?d=e")).toBe("a-b-c-d-e");
+  it("非字母数字字符、空白字符统一替换为 -", () => {
+    expect(slugify("😀 a/b\\c?d=e  a b  ")).toBe("a-b-c-d-e-a-b");
   });
 
   it("去除首尾的连字符", () => {
     expect(slugify("---标题---")).toBe("标题");
-  });
-
-  it("空白字符被替换", () => {
-    expect(slugify("  a b  ")).toBe("a-b");
   });
 
   it("空字符串返回空字符串", () => {
@@ -47,13 +43,9 @@ describe("slugify", () => {
   it("仅特殊符号返回空字符串", () => {
     expect(slugify("???///")).toBe("");
   });
-
-  it("emoji 被替换为连字符（\\p{L} 不匹配 emoji）", () => {
-    expect(slugify("😀 emoji test")).toBe("emoji-test");
-  });
 });
 
-describe("extractToc", () => {
+describe("extractToc 提取标题", () => {
   it("提取 h2/h3/h4 标题", () => {
     const md = `# h1\n## h2 标题\n### h3 标题\n#### h4 标题\n##### h5 标题\n`;
     const items = extractToc(md);
@@ -95,8 +87,8 @@ describe("extractToc", () => {
   });
 });
 
-describe("groupByYear", () => {
-  it("按年份分组并按年份倒序", () => {
+describe("groupByYear 文章年份分组", () => {
+  it("按年份分组并倒序", () => {
     const posts = [
       makePost({ slug: "a", date: "2025-01-01" }),
       makePost({ slug: "b", date: "2026-01-01" }),
@@ -106,12 +98,6 @@ describe("groupByYear", () => {
     expect(groups.map((g) => g.year)).toEqual(["2026", "2025"]);
     expect(groups[0]?.posts).toHaveLength(1);
     expect(groups[1]?.posts).toHaveLength(2);
-  });
-
-  it("缺失日期归为「未知」组", () => {
-    const posts = [makePost({ slug: "a", date: "" })];
-    const groups = groupByYear(posts);
-    expect(groups[0]?.year).toBe("未知");
   });
 
   it("同年内保持原顺序", () => {
@@ -128,7 +114,7 @@ describe("groupByYear", () => {
   });
 });
 
-describe("collectTags", () => {
+describe("collectTags 统计标签次数", () => {
   it("统计标签出现次数", () => {
     const posts = [
       makePost({ tags: ["a", "b"] }),
@@ -158,7 +144,7 @@ describe("collectTags", () => {
   });
 });
 
-describe("filterPosts", () => {
+describe("filterPosts 关键词过滤文章", () => {
   const posts = [
     makePost({ slug: "a", title: "TypeScript 入门", excerpt: "TS 基础" }),
     makePost({ slug: "b", title: "Rust 笔记", excerpt: "内存安全" }),

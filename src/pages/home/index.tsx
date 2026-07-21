@@ -17,9 +17,11 @@ import {
   SiVuedotjs,
   SiWechat,
 } from "@icons-pack/react-simple-icons";
+import VantIcon from "@/assets/vant.svg?react";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { MusicPlayer } from "@/components/music-player";
 import { SectionTitle } from "@/components/section-title";
+import { cn } from "@/lib/utils";
 import { TechBadge } from "./tech-badge";
 
 /** 技能项 */
@@ -69,6 +71,7 @@ const skills: SkillGroup[] = [
       { name: "Ant Design", icon: SiAntdesign },
       { name: "Element UI", icon: SiElement },
       { name: "shadcn/ui", icon: SiShadcnui },
+      { name: "Vant", icon: VantIcon },
     ],
   },
   {
@@ -122,7 +125,8 @@ function Home() {
             <p>常用网名 BearBin / Bear_Bin / 阿熊，一般是从前往后试直到不被占用。熟人叫我阿熊较多。</p>
             <p>现居福建厦门，<del>不自信又</del>普通的社畜。</p>
             <p>爱好方面以游戏、视频为主，目前对同人音乐比较感兴趣。</p>
-            <p>个人思想上可能算有点左，脑子里时不时会有些暴论。写这个网站的目的之一也是考虑把自己的想法记录一下，供事后回顾和他人参考。</p>
+            <p>大学期间做过一阵子明日方舟攻略视频，后来随着毕业临近就停了。停更的时候微博和B站加起来应该有个4万多的粉丝，现在也是掉下来了。</p>
+            <p>个人思想可能算略显激进，脑子里不时会有些暴论。写这个网站的目的之一也是考虑把自己的想法记录一下，供事后回顾和参考。</p>
           </article>
         </section>
 
@@ -132,7 +136,14 @@ function Home() {
             {skills.map((group) => (
               <div key={group.category} className="group relative py-4 last:pb-0">
                 {/* 悬浮分组名：默认透明，hover 时在分组顶部浮现 */}
-                <span className="pointer-events-none absolute -top-3 left-2 z-10 rounded bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100">
+                <span
+                  className={cn(
+                    "absolute -top-3 left-2 z-10 px-2 py-0.5",
+                    "pointer-events-none rounded bg-primary opacity-0 shadow-sm",
+                    "text-xs font-medium text-primary-foreground",
+                    "transition-opacity duration-200 group-hover:opacity-100",
+                  )}
+                >
                   {group.category}
                 </span>
                 <div className="flex flex-wrap gap-2">
@@ -149,7 +160,7 @@ function Home() {
             ))}
           </div>
           <p className="mt-4 text-sm text-muted-foreground line-through">
-            C/C++之类的已经还给大学老师了
+            其实C/C++已经还给大学老师了
           </p>
         </section>
       </div>

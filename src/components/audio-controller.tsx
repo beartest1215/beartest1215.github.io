@@ -73,13 +73,13 @@ function AudioController() {
     audio.volume = effectiveVolume;
   }, [effectiveVolume]);
 
-  // 响应用户拖动进度条触发的 seek：
-  // 仅当差距 > 0.1 秒时才写入 audio，避免 timeupdate 引起的微小更新造成循环写入
+  // 响应用户拖动进度条触发的 seek
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) {
       return;
     }
+    // 仅当差距 > 0.1 秒时才写入，避免 timeupdate 引起的微小更新造成循环写入
     if (Math.abs(audio.currentTime - currentTime) > 0.1) {
       audio.currentTime = currentTime;
     }

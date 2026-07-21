@@ -4,6 +4,7 @@ import { MarkdownHooks, type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { FileX } from "lucide-react";
+import { ExternalLink } from "@/components/external-link";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Empty,
@@ -17,6 +18,7 @@ import {
   BlogOutletContext,
   extractToc,
   loadPost,
+  resolveImage,
   slugify,
   type BlogPost,
 } from "@/lib/blog";
@@ -26,38 +28,20 @@ import {
  * 用于给标题生成稳定的锚点 id（与 extractToc 中算法一致）
  */
 function nodeToText(node: ReactNode): string {
-  if (node === null || node === undefined || typeof node === "boolean") {return "";}
-  if (typeof node === "string" || typeof node === "number") {return String(node);}
-  if (Array.isArray(node)) {return node.map(nodeToText).join("");}
+  if (node === null || node === undefined || typeof node === "boolean") {
+    return "";
+  }
+  if (typeof node === "string" || typeof node === "number") {
+    return String(node);
+  }
+  if (Array.isArray(node)) {
+    return node.map(nodeToText).join("");
+  }
   if (typeof node === "object" && "props" in node) {
     return nodeToText((node as { props: { children?: ReactNode } }).props.children);
   }
   return "";
 }
-
-/** react-markdown 自定义组件：链接新窗口打开、h2/h3/h4 加锚点 id */
-const markdownComponents: Components = {
-  a: ({ children, ...props }) => (
-    <a target="_blank" rel="noopener noreferrer" {...props}>
-      {children}
-    </a>
-  ),
-  h2: ({ children, ...props }) => (
-    <h2 id={slugify(nodeToText(children))} {...props}>
-      {children}
-    </h2>
-  ),
-  h3: ({ children, ...props }) => (
-    <h3 id={slugify(nodeToText(children))} {...props}>
-      {children}
-    </h3>
-  ),
-  h4: ({ children, ...props }) => (
-    <h4 id={slugify(nodeToText(children))} {...props}>
-      {children}
-    </h4>
-  ),
-};
 
 /** 文章加载失败或不存在时的占位提示 */
 function PostNotFound() {
@@ -79,18 +63,11 @@ function PostNotFound() {
   );
 }
 
-/**
- * 文章主体内容
- * 在 PostLoader 解析出 post 后渲染，负责同步 TOC 到父级 Outlet context
- */
+/** 文章主体内容，在 PostLoader 解析出 post 后渲染，负责同步目录到父级 Outlet context */
 function PostContent({ post }: { post: BlogPost }) {
   const { setToc, setActiveId } = useOutletContext<BlogOutletContext>();
 
-  /**
-   * 文章内容变化时同步 TOC 并监听标题位置
-   * 使用 IntersectionObserver 跟踪当前可见章节，回调父级更新 TOC 高亮
-   * 卸载时清空 TOC 与激活项，避免切换文章时残留旧数据
-   */
+  // 文章内容加载，同步目录并监听标题位置
   useEffect(() => {
     setToc(extractToc(post.content));
 
@@ -107,6 +84,7 @@ function PostContent({ post }: { post: BlogPost }) {
     /** 当前处于触发区域内的标题 id 集合 */
     const visible = new Set<string>();
 
+    // 使用 IntersectionObserver 跟踪当前可见章节，回调父级更新目录高亮
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -136,6 +114,7 @@ function PostContent({ post }: { post: BlogPost }) {
 
     headings.forEach((h) => observer.observe(h));
 
+    // 卸载时清空目录与激活项，避免切换文章时残留旧数据
     return () => {
       observer.disconnect();
       setToc([]);
@@ -143,13 +122,38 @@ function PostContent({ post }: { post: BlogPost }) {
     };
   }, [post, setToc, setActiveId]);
 
+  const components: Components = {
+    a: ({ children, ...props }) => (
+      <ExternalLink {...props}>{children}</ExternalLink>
+    ),
+    h2: ({ children, ...props }) => (
+      <h2 id={slugify(nodeToText(children))} {...props}>
+        {children}
+      </h2>
+    ),
+    h3: ({ children, ...props }) => (
+      <h3 id={slugify(nodeToText(children))} {...props}>
+        {children}
+      </h3>
+    ),
+    h4: ({ children, ...props }) => (
+      <h4 id={slugify(nodeToText(children))} {...props}>
+        {children}
+      </h4>
+    ),
+    img: ({ src, alt, ...props }) => {
+      const resolved = typeof src === "string" ? resolveImage(src, post.date.slice(0, 4)) : src;
+      return <img src={resolved} alt={alt} {...props} />;
+    },
+  };
+
   return (
     <article className="mx-auto max-w-4xl px-1 py-8">
       <header className="mb-8 border-b pb-4">
         <h1 className="text-2xl font-semibold md:text-3xl">{post.title}</h1>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <time dateTime={post.date}>{post.date}</time>
-          {post.tags.length > 0 && (
+          {post.tags && post.tags.length > 0 && (
             <>
               <span aria-hidden>·</span>
               {post.tags.map((tag) => (
@@ -166,7 +170,7 @@ function PostContent({ post }: { post: BlogPost }) {
         <MarkdownHooks
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeHighlight]}
-          components={markdownComponents}
+          components={components}
           fallback={<LoadingPlaceholder spinnerSize="size-6" className="py-8" />}
         >
           {post.content}

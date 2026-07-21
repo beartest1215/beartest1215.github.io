@@ -60,7 +60,9 @@ function Blog() {
   const tags = useMemo(() => collectTags(allPosts), [allPosts]);
   const filteredPosts = useMemo(() => {
     let list = filterPosts(allPosts, search);
-    if (activeTag) {list = list.filter((p) => p.tags.includes(activeTag));}
+    if (activeTag) {
+      list = list.filter((post) => post.tags?.includes(activeTag));
+    }
     return list;
   }, [allPosts, search, activeTag]);
   const yearGroups = useMemo(() => groupByYear(filteredPosts), [filteredPosts]);
@@ -85,12 +87,12 @@ function Blog() {
    * 向前回溯到首个可见层级的标题，确保用户始终能看到自己所在章节
    */
   const effectiveActiveId = useMemo(() => {
-    if (!activeId) {return null;}
+    if (!activeId) { return null; }
     const activeIdx = toc.findIndex((item) => item.id === activeId);
-    if (activeIdx === -1) {return null;}
-    if (toc[activeIdx].level <= maxLevel) {return activeId;}
+    if (activeIdx === -1) { return null; }
+    if (toc[activeIdx].level <= maxLevel) { return activeId; }
     for (let i = activeIdx - 1; i >= 0; i--) {
-      if (toc[i].level <= maxLevel) {return toc[i].id;}
+      if (toc[i].level <= maxLevel) { return toc[i].id; }
     }
     return null;
   }, [activeId, toc, maxLevel]);
@@ -141,7 +143,7 @@ function Blog() {
               className={cn("size-4 transition-transform", mobileMenuOpen && "rotate-180")}
             />
           </button>
-          <div className={cn("p-4 md:block", mobileMenuOpen ? "block" : "hidden")}>
+          <div className={cn("p-4 md:block", mobileMenuOpen ? "block border-b" : "hidden")}>
             {loading ? (
               <LoadingPlaceholder spinnerSize="size-6" className="py-8" />
             ) : (
@@ -252,7 +254,7 @@ function Blog() {
       </main>
 
       {/* 右侧 TOC：仅桌面端显示 */}
-      <aside className="hidden lg:block lg:w-70 lg:shrink-0 lg:border-l">
+      <aside className="hidden lg:block lg:w-72 lg:shrink-0 lg:border-l">
         <div className="lg:sticky lg:top-(--header-offset) lg:max-h-[calc(100vh-var(--header-offset))] lg:overflow-y-auto lg:py-6">
           <div className="mb-2 flex items-center justify-between px-4">
             <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">

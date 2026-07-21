@@ -89,7 +89,7 @@ export default defineConfig(
       "@eslint-react/jsx-no-useless-fragment": 1,
 
       "@stylistic/jsx-closing-bracket-location": 2,
-      "@stylistic/jsx-curly-brace-presence": 2,
+      "@stylistic/jsx-curly-brace-presence": [2, { props: "never", children: "ignore" }],
       "@stylistic/jsx-equals-spacing": 2,
       "@stylistic/jsx-first-prop-new-line": [2, "multiline"],
       "@stylistic/jsx-indent-props": [2, 2],
@@ -108,7 +108,6 @@ export default defineConfig(
           logical: "parens-new-line",
         },
       ],
-      // "@stylistic/jsx-shorthand-boolean": 2,
 
       "@stylistic/arrow-parens": 2,
       "@stylistic/arrow-spacing": [2, { before: true, after: true }],

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { ReactNode } from "react";
+import { ExternalLink } from "@/components/external-link";
 import coverUrl from "@/assets/necromance-jacket.jpg";
 import songUrl from "@/assets/春宵一刻.m4a";
 
@@ -37,14 +38,12 @@ const tracks: Track[] = [
     comment: (
       <>
         26春
-        <a
+        <ExternalLink
           href="https://zh.moegirl.org.cn/Music_Media-Mix_Market"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-inherit underline decoration-dotted underline-offset-2 hover:decoration-solid"
+          className="text-inherit underline decoration-dotted underline-offset-2 transition-colors hover:decoration-foreground"
         >
           M3
-        </a>
+        </ExternalLink>
         最佳！两个月爽听600遍
       </>
     ),
@@ -107,20 +106,17 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
       play: () => set({ isPlaying: true }),
       pause: () => set({ isPlaying: false }),
       toggle: () => set((s) => ({ isPlaying: !s.isPlaying })),
-      next: () =>
-        set((s) => ({
-          currentIndex: (s.currentIndex + 1) % s.tracks.length,
-          currentTime: 0,
-        })),
-      prev: () =>
-        set((s) => ({
-          currentIndex:
-            (s.currentIndex - 1 + s.tracks.length) % s.tracks.length,
-          currentTime: 0,
-        })),
+      next: () => set((s) => ({
+        currentIndex: (s.currentIndex + 1) % s.tracks.length,
+        currentTime: 0,
+      })),
+      prev: () => set((s) => ({
+        currentIndex:
+          (s.currentIndex - 1 + s.tracks.length) % s.tracks.length,
+        currentTime: 0,
+      })),
       seek: (time) => set({ currentTime: time }),
-      setVolume: (v) =>
-        set((s) => ({ volume: v, muted: v > 0 ? false : s.muted })),
+      setVolume: (v) => set((s) => ({ volume: v, muted: v > 0 ? false : s.muted })),
       toggleMute: () => set((s) => ({ muted: !s.muted })),
       reportTimeUpdate: (time) => set({ currentTime: time }),
       reportDuration: (duration) => set({ duration }),
@@ -144,5 +140,3 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
     },
   ),
 );
-
-export type { Track };

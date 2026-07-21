@@ -89,4 +89,4 @@ pnpm dev
 
 ### 图片
 
-![头像](./avatar.jpg)
+![头像](./foo.jpg)

@@ -108,6 +108,14 @@
     12% { transform: rotate(4deg); }
     18% { transform: rotate(-2deg); }
   }
+
+  /* 顶部导航进度条：indeterminate 横向移动循环 */
+  --animate-navigation-progress: navigation-progress 1s ease-in-out infinite;
+
+  @keyframes navigation-progress {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(300%); }
+  }
 }
 
 @layer base {
@@ -232,8 +240,7 @@
 
 /*
  * highlight.js 深色主题：覆盖上方浅色 github.css，仅在 .dark 作用域生效。
- * 颜色值取自 highlight.js/styles/github-dark.css。
- * 选择器加 .dark 前缀提升特异性，覆盖浅色规则。
+ * 颜色值直接取自 highlight.js/styles/github-dark.css
  */
 .dark {
   .hljs {
